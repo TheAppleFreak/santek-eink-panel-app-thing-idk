@@ -1,20 +1,20 @@
 import consola from "consola";
 import sharp from "sharp";
-import { Colour, HEIGHT, PIXELS, WIDTH, type Framebuffer } from "./panel.js";
+import { Color, HEIGHT, PIXELS, WIDTH, type Framebuffer } from "./panel.js";
 
-// ── Colour palette ─────────────────────────────────────────────────────────────
+// ── Color palette ─────────────────────────────────────────────────────────────
 
 interface PaletteEntry {
-    code: Colour;
+    code: Color;
     r: number;
     g: number;
     b: number;
 }
 
-const BLACK: PaletteEntry = { code: Colour.Black, r: 0, g: 0, b: 0 };
-const WHITE: PaletteEntry = { code: Colour.White, r: 255, g: 255, b: 255 };
-const YELLOW: PaletteEntry = { code: Colour.Yellow, r: 255, g: 255, b: 0 };
-const RED: PaletteEntry = { code: Colour.Red, r: 255, g: 0, b: 0 };
+const BLACK: PaletteEntry = { code: Color.Black, r: 0, g: 0, b: 0 };
+const WHITE: PaletteEntry = { code: Color.White, r: 255, g: 255, b: 255 };
+const YELLOW: PaletteEntry = { code: Color.Yellow, r: 255, g: 255, b: 0 };
+const RED: PaletteEntry = { code: Color.Red, r: 255, g: 0, b: 0 };
 
 export type PaletteMode = "bwry" | "bwr" | "bw";
 
@@ -23,10 +23,10 @@ export type PaletteMode = "bwry" | "bwr" | "bw";
  *
  * Yellow and (to a lesser extent) red require the longest, highest-voltage
  * e-ink waveforms, so they dominate the power and duration of a refresh. On a
- * passively-powered NFC panel, an image heavy in those colours can exceed the
+ * passively-powered NFC panel, an image heavy in those colors can exceed the
  * harvested-power budget and brown the chip out mid-refresh. Dropping them
- * trades colour fidelity for a gentler, more reliable update:
- *   - `bwry` full colour (default)
+ * trades color fidelity for a gentler, more reliable update:
+ *   - `bwry` full color (default)
  *   - `bwr`  drops yellow (the worst offender); keeps red
  *   - `bw`   black & white only — the safest, lowest-power refresh
  */
@@ -72,7 +72,7 @@ function nearest(
     return best;
 }
 
-/** Flat nearest-colour mapping — no error diffusion (fewer high-frequency transitions). */
+/** Flat nearest-color mapping — no error diffusion (fewer high-frequency transitions). */
 export class NearestColorDither implements DitherStrategy {
     quantize(
         rgb: Uint8Array,
@@ -185,12 +185,12 @@ export async function loadAndQuantize(
 
     const codes = dither.quantize(rgb, WIDTH, HEIGHT, palette);
 
-    // Report colour usage — large yellow/red areas are the prime brownout suspects.
+    // Report color usage — large yellow/red areas are the prime brownout suspects.
     const counts = new Map<number, number>();
     for (const c of codes) counts.set(c, (counts.get(c) ?? 0) + 1);
     const pct = (code: number) => (((counts.get(code) ?? 0) / PIXELS) * 100).toFixed(1);
     consola.info(
-        `Colour mix — black ${pct(0)}%  white ${pct(1)}%  yellow ${pct(2)}%  red ${pct(3)}%`
+        `Color mix — black ${pct(0)}%  white ${pct(1)}%  yellow ${pct(2)}%  red ${pct(3)}%`
     );
 
     return codes;

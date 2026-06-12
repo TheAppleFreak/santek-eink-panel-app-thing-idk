@@ -2,7 +2,7 @@ import net from "node:net";
 import zlib from "node:zlib";
 import consola from "consola";
 import { Bonjour, type Service } from "bonjour-service";
-import { Colour, delay, HEIGHT, PIXELS, WIDTH, type Framebuffer } from "./panel.js";
+import { Color, delay, HEIGHT, PIXELS, WIDTH, type Framebuffer } from "./panel.js";
 import type { PanelController } from "./controller.js";
 
 // ── Protocol constants ───────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ const PKT_REQUEST_CONFIG = 0x83; // server → display
 // NOTE: some servers (e.g. the Home Assistant opendisplay-wifi add-on) ignore
 // the announced scheme and always send 1-bit monochrome, so the decoder below
 // adapts to whatever size actually arrives rather than assuming 2 bpp.
-const COLOUR_SCHEME_BWRY = 0x03; // 2 bpp: 0=black 1=white 2=yellow 3=red
+const Color_SCHEME_BWRY = 0x03; // 2 bpp: 0=black 1=white 2=yellow 3=red
 
 const MONO_BYTES = Math.ceil(WIDTH / 8) * HEIGHT; // 1 bpp  → 15000
 const BWRY_BYTES = (WIDTH / 4) * HEIGHT; // 2 bpp  → 30000
@@ -76,7 +76,7 @@ function buildAnnouncement(): Buffer {
     p.writeUInt8(PKT_DISPLAY_ANNOUNCEMENT, 1);
     p.writeUInt16LE(WIDTH, 2);
     p.writeUInt16LE(HEIGHT, 4);
-    p.writeUInt8(COLOUR_SCHEME_BWRY, 6);
+    p.writeUInt8(Color_SCHEME_BWRY, 6);
     p.writeUInt16LE(0x0000, 7); // firmware_id
     p.writeUInt16LE(0x0001, 9); // firmware_version
     p.writeUInt16LE(0x0000, 11); // manufacturer_id
@@ -156,7 +156,7 @@ function decodeMono(data: Buffer): Framebuffer {
     for (let y = 0; y < HEIGHT; y++) {
         for (let x = 0; x < WIDTH; x++) {
             const bit = (data[y * rowBytes + (x >> 3)] >> (7 - (x & 7))) & 1;
-            fb[y * WIDTH + x] = bit ? Colour.White : Colour.Black;
+            fb[y * WIDTH + x] = bit ? Color.White : Color.Black;
         }
     }
     return fb;
@@ -171,11 +171,11 @@ function decodeBWRY(data: Buffer): Framebuffer {
     return fb;
 }
 
-/** 4 bpp 6-colour: 2 px/byte, left pixel in the high nibble. Blue/green (5/6) are
- *  clamped to the nearest BWRY colour the panel can show. */
+/** 4 bpp 6-color: 2 px/byte, left pixel in the high nibble. Blue/green (5/6) are
+ *  clamped to the nearest BWRY color the panel can show. */
 function decodeSixColor(data: Buffer): Framebuffer {
     const map = (v: number): number =>
-        v <= 3 ? v : v === 6 ? Colour.Black : Colour.White;
+        v <= 3 ? v : v === 6 ? Color.Black : Color.White;
     const fb: Framebuffer = new Uint8Array(PIXELS);
     for (let p = 0; p < PIXELS; p++) {
         const byte = data[p >> 1];
@@ -186,7 +186,7 @@ function decodeSixColor(data: Buffer): Framebuffer {
 
 /**
  * Decodes an OpenDisplay image payload into a framebuffer, adapting to whatever
- * encoding the server actually sent (identified by size). The colour codes match
+ * encoding the server actually sent (identified by size). The color codes match
  * our internal {@link Framebuffer} numbering (0=black 1=white 2=yellow 3=red).
  */
 function decodeImage(raw: Buffer): Framebuffer {

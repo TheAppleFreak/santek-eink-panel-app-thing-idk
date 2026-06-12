@@ -16,9 +16,9 @@ const BYTES_PER_ROW = WIDTH / 4; // 100 bytes (4 × 2 bpp per byte)
 const BYTES_PER_STRIP = BYTES_PER_ROW * ROWS_PER_STRIP; // 2000 bytes
 const MAX_FRAGMENT = 250; // max payload bytes per fragment APDU
 
-// Colour codes (shared with protocol.md and OpenDisplay scheme 3):
+// Color codes (shared with protocol.md and OpenDisplay scheme 3):
 //   0 = black  1 = white  2 = yellow  3 = red
-export const enum Colour {
+export const enum Color {
     Black = 0,
     White = 1,
     Yellow = 2,

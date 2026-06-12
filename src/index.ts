@@ -158,9 +158,9 @@ function printUsage(): void {
             `                              (default port ${DEFAULT_PORT}).`,
             "",
             "Image-mode options (ignored in OpenDisplay mode):",
-            "  --palette <bwry|bwr|bw>  Colour set. Drop yellow (bwr) or all colour (bw)",
+            "  --palette <bwry|bwr|bw>  Color set. Drop yellow (bwr) or all color (bw)",
             "                           to lower refresh power and avoid brownouts. [bwry]",
-            "  --no-dither              Flat nearest-colour mapping instead of dithering.",
+            "  --no-dither              Flat nearest-color mapping instead of dithering.",
             "  --waveform <P1> <P2>     Override the refresh waveform selector bytes (hex).",
             `                           [default: ${DEFAULT_WAVEFORM.map((b) => b.toString(16)).join(" ")}]`,
             "  -h, --help               Show this help."
@@ -200,10 +200,10 @@ async function runInteractive(): Promise<CliOptions> {
             cancel: "reject"
         })) as string;
 
-        opts.image.palette = (await consola.prompt("Colour palette:", {
+        opts.image.palette = (await consola.prompt("Color palette:", {
             type: "select",
             options: [
-                { label: "Black/White/Red/Yellow (full colour)", value: "bwry" },
+                { label: "Black/White/Red/Yellow (full color)", value: "bwry" },
                 { label: "Black/White/Red (drops yellow — lower power)", value: "bwr" },
                 { label: "Black/White only (safest — lowest power)", value: "bw" }
             ],
